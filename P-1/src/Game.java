@@ -157,7 +157,7 @@ public class Game {
 			
 			if(card.getCard()[0].equals("wild")) {
 				String color = colorAutoSelect(card);
-				System.out.println("Computer plays" + card + "card - the new color is " + color);
+				System.out.println("Computer plays " + card + " card - the new color is " + color);
 			} else {
 				System.out.println("Computer plays " + card + " card");
 			}
