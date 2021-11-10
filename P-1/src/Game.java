@@ -37,7 +37,7 @@ public class Game {
 	
 		}
 		
-		// System.out.println("THANK YOU FOR PLAYING!");
+		System.out.println("THANK YOU FOR PLAYING!");
 	}
 	
 	/**
