@@ -45,7 +45,7 @@ public class Deck {
 		
 		// Wild
 		for(int i = 0; i < 4; i++) {
-			deck.add(new Wild("none", "wild"));
+			deck.add(new Wild("wild", "none"));
 		}
 		
 		if(!card.getCard()[0].equals("first")) {

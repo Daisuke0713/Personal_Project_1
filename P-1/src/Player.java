@@ -61,6 +61,18 @@ public class Player {
 	}
 	
 	/**
+	 * Check if the given indicator has a match
+	 */
+	public boolean match(String indicator) {
+		for(Map.Entry<String, Card> entry : hand.entrySet()) {
+			if(indicator.equals(entry.getKey())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Return the size of hand
 	 */
 	public int handSize() {
