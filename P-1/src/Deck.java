@@ -21,7 +21,7 @@ public class Deck {
 	}
 	
 	/**
-	 * Fill the deck with 36 cards (N:24(0~5), D2: 8, W:4).
+	 * Fill the deck with 36 cards (N:24(0~5), D2: 4, W:4).
 	 * The card is the top card currently on the deck, so we avoid to
 	 * add the same card.
 	 */

@@ -12,6 +12,7 @@ public class Game {
 	private static Scanner input = new Scanner(System.in);
 	private int computer_handsize = 0;
 	private Printer printer;
+	private int draw_count = 0; 
 	
 	public Game() {
 		printer = new Printer();
@@ -27,11 +28,11 @@ public class Game {
 		while(!proceed.equals("n")) {
 			playGame();
 			turn_num = 1;
-			System.out.print("Play again? - Y/n");
+			System.out.print("Play again? - Y/n ");
 			while(!proceed.equals("Y") && !proceed.equals("n")) {
 				proceed = input.nextLine();
 				if(!proceed.equals("Y") && !proceed.equals("n")) {
-					System.out.print("Invalid input - enter Y/n");
+					System.out.print("Invalid input - enter Y/n ");
 				}
 			}
 	
@@ -50,7 +51,7 @@ public class Game {
 		computer_handsize = computer.handSize();
 		
 		// Set Normal Card as the top of discard
-		while(deck.getDeck().peek().getCard()[0].equals("none") 
+		while(deck.getDeck().peek().getCard()[0].equals("wild") 
 				|| deck.getDeck().peek().getCard()[0].equals("+2")) {
 			deck.Play(deck.Draw());
 		}
@@ -92,43 +93,57 @@ public class Game {
 		if(playable(top, player)) {
 			// I can add a loop here until Player inputs a valid indicator
 			System.out.print("Pick a card to play: ");
+			
+			/**
 			String indicator = input.nextLine();
 			
-			if(!player.match(indicator)) {
-				System.out.println("Invalid indicator - your turn ends.");
-			} else {
-				Card card = player.getHand().get(indicator);
-				if(!card.playable(top)) {
-					System.out.println("Card cannot be played - your turn ends.");
-				} else { // card is found and can be played
-					if(card.getCard()[1].equals("wild")) {
-						System.out.print("Choose a color: ");
-						String color = "";
-						while(!color.equals("red") && !color.equals("blue") 
-								&& !color.equals("green") && !color.equals("yellow")) {
-							color = input.nextLine();
-							if(!color.equals("red") && !color.equals("blue") 
-								&& !color.equals("green") && !color.equals("yellow")) {
-								System.out.print("Invalid color - choose again: ");
-							}
-						}
-						card.setColor(color);
-					}
-					deck.Play(card);
-					player.play(card);
-				}
-				if(player.handSize() == 1) {
-					printer.UNO();
-				}
+			while(!player.match(indicator)) {
+				System.out.println("Invalid indicator - chose again");
+				indicator = input.nextLine();
+			} 
+				
+			Card card = player.getHand().get(indicator);
+			if(!card.playable(top)) {
+				System.out.println("Card cannot be played - your turn ends");
+			} else { // card is found and can be played
+		    **/
+			Card card = null;
+			while(card == null) {
+				card = check_valid(top);
 			}
+				
+			if(card.getCard()[0].equals("wild")) {		
+				System.out.print("Choose a color: ");	
+				String color = "";	
+				while(!color.equals("red") && !color.equals("blue") 
+						&& !color.equals("green") && !color.equals("yellow")) {
+					color = input.nextLine();
+					if(!color.equals("red") && !color.equals("blue") 
+						&& !color.equals("green") && !color.equals("yellow")) {
+						System.out.print("Invalid color - choose again: ");
+					}
+				}
+				card.setColor(color);
+			} else if (card.getCard()[0].equals("+2")) {
+				draw_count += 2;
+			}
+			
+			deck.Play(card);
+			player.play(card);
+			
+			if(player.handSize() == 1) {
+				printer.UNO();
+			}
+			
 		} else { // Player had no cards to play
 			System.out.println("No cards to play");
 			
 			if(top.getCard()[0].equals("+2")) {
-				System.out.println("You draw two cards");
-				player.drawCards(deck.drawCards(2));
+				System.out.println("You draw " + draw_count +  " cards");
+				player.drawCards(deck.drawCards(draw_count));
+				draw_count = 0;
 				if(turn_num != 1) { // redraw the top from deck
-					while(top.getCard()[0].equals("none") 
+					while(top.getCard()[0].equals("wild") 
 							|| top.getCard()[0].equals("+2")) {
 						deck.Play(deck.Draw());
 						top = deck.getDiscard().peek();
@@ -145,6 +160,25 @@ public class Game {
 	}
 	
 	/**
+	 * check if Player gives a valid input
+	 */
+	private Card check_valid(Card top) {
+		String indicator = input.nextLine();
+		Card card = null;
+		
+		if(player.match(indicator)) {
+			card = player.getHand().get(indicator);
+			if(!playableCards(top, player.getHand()).contains(card)) {
+				System.out.println("Invalid indicator - card cannot be played");
+				card = null;
+			}
+		} else {
+			System.out.println("Invalid indicator - chose again");
+		}	
+		return card;
+	}
+	
+	/**
 	 * Simulate Computer's turn
 	 */
 	private void comp_turn() {
@@ -153,23 +187,27 @@ public class Game {
 		printer.TOP(top);
 		
 		if(playable(top, computer)) {
-			Card card = playableCard(top, computer.getHand());
+			Card card = playableCards(top, computer.getHand()).get(0);
 			
 			if(card.getCard()[0].equals("wild")) {
 				String color = colorAutoSelect(card);
-				System.out.println("Computer plays " + card + " card - the new color is " + color);
+				System.out.println("Computer plays [" + card + "] card - the new color is " + color);
+			} else if (card.getCard()[0].equals("+2")){
+				draw_count += 2;
+				System.out.println("Computer plays [" + card + "] card");
 			} else {
-				System.out.println("Computer plays " + card + " card");
+				System.out.println("Computer plays [" + card + "] card");
 			}
 			deck.Play(card);
 			computer.play(card);
 			computer_handsize -= 1;
 		} else {
 			if(top.getCard()[0].equals("+2")) {
-				System.out.println("Computer draws two cards");
-				computer.drawCards(deck.drawCards(2));
-				computer_handsize += 2;
-				while(top.getCard()[0].equals("none") 
+				System.out.println("Computer draws " + draw_count + " cards");
+				computer.drawCards(deck.drawCards(draw_count));
+				computer_handsize += computer_handsize;
+				draw_count = 0;
+				while(top.getCard()[0].equals("wild") 
 						|| top.getCard()[0].equals("+2")) {
 					deck.Play(deck.Draw());
 					top = deck.getDiscard().peek();
@@ -186,18 +224,18 @@ public class Game {
 	}
 	
 	/**
-	 * Return a card from hand that can be played - only
-	 * called when there is such a card.
+	 * Return a list of cards that can be played - only
+	 * called when there are such a list
 	 */
-	private Card playableCard(Card top, Map<String, Card> hand) {
+	private ArrayList<Card> playableCards(Card top, Map<String, Card> hand) {
+		ArrayList<Card> cards = new ArrayList<Card>();
 		for(Map.Entry<String, Card> entry : hand.entrySet()) {
 			Card card = entry.getValue();
 			if(card.playable(top)) {
-				return card;
+				cards.add(card);
 			}	
 		}
-		System.exit(0);
-		return top; // Should never reach here
+		return cards;
 	}
 	
 	/**
