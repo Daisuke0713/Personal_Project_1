@@ -93,20 +93,6 @@ public class Game {
 		if(playable(top, player)) {
 			// I can add a loop here until Player inputs a valid indicator
 			System.out.print("Pick a card to play: ");
-			
-			/**
-			String indicator = input.nextLine();
-			
-			while(!player.match(indicator)) {
-				System.out.println("Invalid indicator - chose again");
-				indicator = input.nextLine();
-			} 
-				
-			Card card = player.getHand().get(indicator);
-			if(!card.playable(top)) {
-				System.out.println("Card cannot be played - your turn ends");
-			} else { // card is found and can be played
-		    **/
 			Card card = null;
 			while(card == null) {
 				card = check_valid(top);
