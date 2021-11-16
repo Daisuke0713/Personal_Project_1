@@ -1,3 +1,5 @@
+FINISHED
+
 # Personal_Project_1
 This is a simplified JAVA implementation of the board game: UNO. 
 
